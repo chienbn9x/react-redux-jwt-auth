@@ -1,5 +1,5 @@
 import React from "react";
-import { redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 
 import Form from 'react-validation/build/form';
 import Input from 'react-validation/build/input';
@@ -75,7 +75,7 @@ class Login extends React.Component {
     const { isLoggedIn, message } = this.props;
 
     if (isLoggedIn) {
-      return <redirect to="/profile" />;
+      return <Redirect to="/profile" />;
     }
 
     return (
@@ -87,11 +87,73 @@ class Login extends React.Component {
             className="profile-img-card"
           />
 
-          <Form>
-            
+          <Form
+            onSubmit={this.handleSubmit}
+            ref={(c) => {this.form = c;}}
+          >
+            <div className="form-group">
+              <label htmlFor="username">Username</label>
+              <Input
+                type="text"
+                className="form-control"
+                name="username"
+                value={this.state.username}
+                onChange={this.onChangeUsername}
+                validations={[required]}
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <Input
+                type="password"
+                className="form-control"
+                name="password"
+                value={this.state.password}
+                onChange={this.onChangePassword}
+                validations={[required]}
+              />
+            </div>
+
+            <div className="form-group">
+              <button
+                className="btn btn-primary btn-block"
+                disabled={this.state.loading}
+              >
+                {this.state.loading && (
+                  <span className="spinner-border spinner-border-sm"></span>
+                )}
+                <span>Login</span>
+              </button>
+            </div>
+
+            {message && (
+              <div className="form-group">
+                <div className="alert alert-danger" role={alert}>
+                  {message}
+                </div>
+              </div>
+            )}
+            <CheckButton
+              style={{ display: "none" }}
+              ref={(c) => {
+                this.checkBtn = c;
+              }}
+            />
           </Form>
         </div>
       </div>
-    )
+    );
   }
 }
+
+function mapStateToProps(state) {
+  const { isLoggedIn } = state.auth;
+  const { message } = state.message;
+  return {
+    isLoggedIn,
+    message
+  };
+}
+
+export default connect(mapStateToProps)(Login);
